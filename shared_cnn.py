@@ -22,13 +22,13 @@ def conv5x5(in_channels: int, out_channels: int):
 def maxpool3x3():
     pad = int((3 - 1) / 2)
     pad = (pad, pad)
-    return nn.MaxPool2d(kernel_size=3, padding=pad)
+    return nn.MaxPool2d(kernel_size=3, padding=pad, stride=1)
 
 
 def maxpool5x5():
     pad = int((5 - 1) / 2)
     pad = (pad, pad)
-    return nn.MaxPool2d(kernel_size=5, padding=pad)
+    return nn.MaxPool2d(kernel_size=5, padding=pad, stride=1)
 
 
 class ConvCell(nn.Module):
@@ -107,7 +107,7 @@ class NASConv(nn.Module):
         if len(y):
             y = torch.sum(torch.stack(y), dim=0)
             x = torch.sum(torch.stack([x, y]), dim=0)
-            
+
         return x
 
     def forward(self, prev_layers: List[torch.Tensor], layer_config: List[List[int]]):
@@ -120,5 +120,45 @@ class NASConv(nn.Module):
 
         if op_config[0] == 0 or op_config[0] == 1:  # if op is conv
             x = self.batch_norm(x)
+
+        return x
+
+
+class NASConvModel(nn.Module):
+    """
+    """
+    def __init__(self, class_num: int, num_layer: int, feature_size: int):
+        super(NASConvModel, self).__init__()
+        self.class_num = class_num
+        self.num_layer = num_layer
+        self.feature_size = feature_size
+        self.model = self._build_model()
+
+    def _build_model(self):
+        layer_list = []
+        pad = int((3 - 1) / 2)
+        pad = (pad, pad)
+        layer_list.append(nn.Conv2d(in_channels=3, out_channels=self.feature_size, kernel_size=3, padding=pad))
+
+        for _ in range(self.num_layer):
+            layer_list.append(NASConv(self.feature_size))
+
+        layer_list.append(nn.Linear(self.feature_size, self.class_num))
+
+        layer_list = nn.ModuleList(layer_list)
+        return layer_list
+
+    def forward(self, x: torch.Tensor, sample_arch: List[List[int]]):
+        """
+        """
+        prev_layers = []
+        x = self.model[0](x)
+        prev_layers.append(x)
+        for i in range(self.num_layer):
+            x = self.model[i+1](prev_layers, sample_arch[i])
+            prev_layers.append(x)
+        x = x.view(x.size(0), x.size(1), -1)
+        x = torch.mean(x, dim=-1)
+        x = self.model[-1](x)
 
         return x
