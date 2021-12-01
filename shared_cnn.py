@@ -127,18 +127,19 @@ class NASConv(nn.Module):
 class NASConvModel(nn.Module):
     """
     """
-    def __init__(self, class_num: int, num_layer: int, feature_size: int):
+    def __init__(self, in_channels: int, class_num: int, num_layer: int, feature_size: int):
         super(NASConvModel, self).__init__()
         self.class_num = class_num
         self.num_layer = num_layer
         self.feature_size = feature_size
+        self.in_channels = in_channels
         self.model = self._build_model()
 
     def _build_model(self):
         layer_list = []
         pad = int((3 - 1) / 2)
         pad = (pad, pad)
-        layer_list.append(nn.Conv2d(in_channels=3, out_channels=self.feature_size, kernel_size=3, padding=pad))
+        layer_list.append(nn.Conv2d(in_channels=self.in_channels, out_channels=self.feature_size, kernel_size=3, padding=pad))
 
         for _ in range(self.num_layer):
             layer_list.append(NASConv(self.feature_size))
