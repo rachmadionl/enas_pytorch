@@ -1,4 +1,3 @@
-from random import sample
 import sys
 import os
 import pytest
@@ -43,7 +42,7 @@ def test_model():
     N = 2; C = 3; H = 32; W = 32
     inputs = torch.randn([N, C, H, W])
     num_layer = 6
-    net = NASConvModel(class_num=10, num_layer=num_layer, feature_size=64)
+    net = NASConvModel(in_channels=3, class_num=10, num_layer=num_layer, feature_size=64)
     sample_arch = []
     for i in range(num_layer):
         op_config = list(np.random.randint(0, 4, size=1))
