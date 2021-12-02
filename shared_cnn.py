@@ -4,9 +4,6 @@ import torch
 import torch.nn as nn
 
 
-DEBUG = True
-
-
 def conv3x3(in_channels: int, out_channels: int):
     pad = int((3 - 1) / 2)
     pad = (pad, pad)
@@ -139,7 +136,9 @@ class NASConvModel(nn.Module):
         layer_list = []
         pad = int((3 - 1) / 2)
         pad = (pad, pad)
-        layer_list.append(nn.Conv2d(in_channels=self.in_channels, out_channels=self.feature_size, kernel_size=3, padding=pad))
+        layer_list.append(
+            nn.Conv2d(in_channels=self.in_channels, out_channels=self.feature_size, kernel_size=3, padding=pad)
+        )
 
         for _ in range(self.num_layer):
             layer_list.append(NASConv(self.feature_size))
@@ -156,7 +155,7 @@ class NASConvModel(nn.Module):
         x = self.model[0](x)
         prev_layers.append(x)
         for i in range(self.num_layer):
-            x = self.model[i+1](prev_layers, sample_arch[i])
+            x = self.model[i+1](prev_layers, sample_arch[i * 2: (i+1) * 2])
             prev_layers.append(x)
         x = x.view(x.size(0), x.size(1), -1)
         x = torch.mean(x, dim=-1)
