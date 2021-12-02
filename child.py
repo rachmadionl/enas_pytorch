@@ -13,7 +13,7 @@ class Child:
                  num_layers: int = 6,
                  feature_size: int = 64,
                  batch_size: int = 32,
-                 lr: int = 8e-3,
+                 lr: float = 8e-3,
                  dataset='cifar10'):
         self.in_channels = in_channels
         self.class_num = class_num
