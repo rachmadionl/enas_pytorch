@@ -48,9 +48,11 @@ def test_model():
         op_config = list(np.random.randint(0, 4, size=1))
         skip_config = list(np.random.randint(0, 2, size=i))
         if i == 0:
-            sample_arch.append([op_config, []])
+            sample_arch.append(op_config)
+            sample_arch.append(skip_config)
         else:
-            sample_arch.append([op_config, skip_config])
+            sample_arch.append(op_config)
+            sample_arch.append(skip_config)
 
     outputs = net(inputs, sample_arch)
 
