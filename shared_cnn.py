@@ -148,7 +148,7 @@ class NASConvModel(nn.Module):
         layer_list = nn.ModuleList(layer_list)
         return layer_list
 
-    def forward(self, x: torch.Tensor, sample_arch: List[List[int]]):
+    def forward(self, x: torch.Tensor, sample_arch: List[int]):
         """
         """
         prev_layers = []

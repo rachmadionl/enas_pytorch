@@ -30,7 +30,7 @@ class Child:
 
         self.dataset = dataset
 
-    def fit(self, sample_arch: List[List[int]], num_epoch: int):
+    def fit(self, sample_arch: List[int], num_epoch: int):
         trainloader = data_loader(self.batch_size, dataset=self.dataset)
         self.net.train()
         for epoch in range(num_epoch):
@@ -51,7 +51,7 @@ class Child:
                     print(f'epoch: {epoch + 1:2d}\tstep: {step + 1:4d}\tloss: {total_loss / 100:.3f}')
                     total_loss = 0.0
 
-    def valid(self, sample_arch: List[List[int]]):
+    def valid(self, sample_arch: List[int]):
         validloader = data_loader(self.batch_size, mode='valid', dataset=self.dataset)
         total_acc = 0
         self.net.eval()
