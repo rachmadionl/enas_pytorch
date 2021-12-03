@@ -57,7 +57,8 @@ class NASController(nn.Module):
         self.tanh_constant = tanh_constant
         self.skip_target = torch.tensor([1 - skip_target, skip_target], dtype=torch.float, device=self.device)
         self.model = self._build_model()
-        self.g_emb = nn.Parameter(0.2 * torch.rand(1, self.hidden_size) - 0.1)
+        g_emb_init = 0.2 * torch.rand(1, self.hidden_size) - 0.1
+        self.register_parameter(name='g_emb', param=torch.nn.Parameter(g_emb_init))
 
         self.model = self.model.to(self.device)
 
@@ -132,7 +133,7 @@ class NASController(nn.Module):
 
             # Scale logit with temperature
             if self.temperature is not None:
-                logit /= logit
+                logit /= self.temperature
 
             # Scale logit with tanh_constant
             if self.tanh_constant is not None:
